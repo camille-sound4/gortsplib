@@ -1065,18 +1065,18 @@ func (c *Client) doOptions(u *base.URL) (*base.Response, error) {
 		return nil, err
 	}
 
-	if res.StatusCode != base.StatusOK {
+	switch res.StatusCode {
+	case base.StatusOK:
+		// OK, parse
+		c.optionsSent = true
+		c.useGetParameter = supportsGetParameter(res.Header)
+	case base.StatusMethodNotAllowed, base.StatusNotFound:
 		// since this method is not implemented by every RTSP server,
-		// return an error only if status code is not 404
-		if res.StatusCode == base.StatusNotFound {
-			return res, nil
-		}
+		// return an error only if status code is not 404 or 405
+		c.optionsSent = true
+	default:
 		return nil, liberrors.ErrClientBadStatusCode{Code: res.StatusCode, Message: res.StatusMessage}
 	}
-
-	c.optionsSent = true
-	c.useGetParameter = supportsGetParameter(res.Header)
-
 	return res, nil
 }
 
