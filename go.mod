@@ -1,4 +1,4 @@
-module github.com/bluenviron/gortsplib/v4
+module github.com/camille-sound4/gortsplib/v4
 
 go 1.20
 
